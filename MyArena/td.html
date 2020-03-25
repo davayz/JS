@@ -1,0 +1,298 @@
+<html>
+
+<script src="http://davidbau.com/encode/seedrandom.js"></script>
+
+
+<head>
+    <meta charset="utf-8" />
+    <title>Hello React</title>
+</head>
+
+<body>
+    <canvas id="canvas1" width="1920" height="1080"></canvas>
+    <!--<button Id="btn1">btn1</button>-->
+
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+</script>
+<script>
+    socket.emit('connected');
+
+    var input = {
+
+        mouse: {
+            x: 0,
+            y: 0
+        },
+
+        keyboard: {
+            right: false,
+            left: false,
+            up: false,
+            down: false,
+            space: false,
+            shift: false,
+            alt: false
+        }
+
+    }
+
+
+
+
+    document.addEventListener('mousemove', function (event) {
+        input.mouse.x = event.clientX;
+        input.mouse.y = event.clientY;
+    });
+
+    document.addEventListener("keydown", function onEvent(event) {
+
+        if (event.shiftKey) {
+            event.preventDefault();
+        }
+
+        if (event.key === "d") {
+            //x += 1*speed;
+            input.keyboard.right = true;
+        }
+        if (event.key === "w") {
+            input.keyboard.up = true;
+        }
+        if (event.key === "a") {
+            input.keyboard.left = true;
+        }
+        if (event.key === "s") {
+            input.keyboard.down = true;
+        }
+        if (event.key === ' ' || event.key === 'Spacebar') {
+            input.keyboard.space = true;
+        }
+
+        if (event.key === 'v') {
+            input.keyboard.shift = true;
+        }
+
+
+    });
+
+    document.addEventListener("keyup", function onEvent(event) {
+
+        if (event.key === "d") {
+            input.keyboard.right = false;
+            if (event.shiftKey) {
+            }
+        }
+        if (event.key === "w") {
+            input.keyboard.up = false;
+        }
+        if (event.key === "a") {
+            input.keyboard.left = false;
+        }
+        if (event.key === "s") {
+            input.keyboard.down = false;
+        }
+        if (event.key === ' ' || event.key === 'Spacebar') {
+            input.keyboard.space = false;
+        }
+
+        if (event.key === 'v') {
+            input.keyboard.shift = false;
+        }
+
+        /* if (event.key === 'Shift' || event.key === 'shift') {
+             console.log("shift");
+             input.keyboard.shift = false;
+         }*/
+
+
+    });
+
+    document.oncontextmenu = function () {
+        return false;
+    }
+
+    setInterval(function () { socket.emit("input", input) }, 1000 / 60);
+    //setInterval( function() { socket.emit('keyboardInput',keyboard) }, 1000/60);
+    //setInterval( function() { socket.emit('mouseInput',mouse) }, 1000/60);
+
+
+    //#endregion
+
+    var canvas = document.getElementById("canvas1");
+    var ctx = canvas.getContext("2d");
+
+    var TextMap = [
+  'W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W',
+  'W       W                                                 W',
+  'W   E   W           E           E                         W',
+  'W   E   W                                                 W',
+  'W       W           E     W W W W W W                     W',
+  'W     W W                                                 W',
+  'W                   E                                     W',
+  'W         E E                   E                         W',
+  'W                                                         W',
+  'W W W W W W W W W W W W W W                               W',
+  'W                         W                               W',
+  'W     E     E             W     E                         W',
+  'W                   E     W                               W',
+  'W W W W W W W             W                               W',
+  'W                         W     E                         W',
+  'W               W W W W W W                               W',
+  'W   P                     W                               W',
+  'W                   E                                     W',
+  'W         W W W                   E                       W',
+  'W           W       E                                     W',
+  'W W W W W W W W W W W W W W W W W W W W W W W W W W W W W W'
+];
+
+    function drawMap()
+    {
+        for (var y = 0; y < TextMap.length; y++) {
+            var row = TextMap[y];
+
+            for (var x = 0; x < row.length; x ++) {
+                var tile = row[x];
+                if (tile == "W") {
+                    ctx.drawImage(wallImg, x * 32, y * 64, wallImg.width, wallImg.height);
+                }
+
+            }
+        }
+    }
+
+    var wallImg = new Image();
+    wallImg.src = "wall.png";
+    wallImg.onload = function () {
+       //drawMap();
+    }
+
+
+
+
+
+
+
+
+    socket.on('render', function (entities) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        entities.forEach(function (e) {
+            //drawMap();
+            var img = new Image();
+            img.src = e.sprite;
+            ctx.drawImage(img, e.x, e.y, img.width, img.height);
+
+            var collider = e.collider;
+            if (collider) {
+                drawCollider(collider.x, collider.y, collider.radius);
+            }
+            
+
+        });
+    });
+
+    function drawCollider(x, y, radius) {
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.stroke();
+    }
+
+
+    document.addEventListener('mouseup', function onEvent(event) {
+
+
+        if (event.which == '1') {
+            var clickPosition = getMousePos(canvas, event);
+            socket.emit('LMB', clickPosition);
+        }
+
+        if (event.which == '3') {
+            var clickPosition = getMousePos(canvas, event);
+            socket.emit('RMB', clickPosition);
+        }
+    });
+
+    function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
+    }
+
+    function renderr(x, y, imgPath) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'green';
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, 2 * Math.PI);
+        ctx.fill();
+        /*var img = new Image(91,83);
+        img.src = imgPath;
+
+        img.onload = function()
+        {*/
+        //ctx.drawImage(img,x,y,img.width, img.height);
+        //requestAnimationFrame(render);
+        //  }        
+    }
+
+
+
+    /* var player = new Entity(0, 0, 4, img);
+
+     var img = new Image(64, 64);
+     img.src = 'ocean.png';
+     img.onload = function () {
+         ctx.drawImage(img, 0, 0, 64, 64);
+     }
+
+
+     var entities = [];
+     entities.push(player);
+
+
+
+
+
+
+     var moveTowardsSystem = new MoveTowardsSystem(["MoveTowardsComponent"]);
+     var projectileSystem = new ProjectileSystem(["ProjectileComponent"]);
+
+     var tick = function () {
+         var dx = 0;
+         var dy = 0;
+
+         if (keyboard.up) {
+             dy -= 1;
+         }
+         if (keyboard.right) {
+             dx += 1;
+         }
+         if (keyboard.left) {
+             dx -= 1;
+         }
+         if (keyboard.down) {
+             dy += 1;
+         }
+
+         ctx.clearRect(0, 0, 1920, 1080);
+         player.Move(dx, dy);
+
+         entities.forEach(function (e) {
+             moveTowardsSystem.update(e);
+             projectileSystem.update(e);
+             e.Render();
+         })
+
+         requestAnimationFrame(tick);
+     }
+
+     requestAnimationFrame(tick);
+
+     */
+
+</script>
+
+</html>

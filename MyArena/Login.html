@@ -1,0 +1,79 @@
+<html>
+
+<head>
+  <title>Login Chat Page</title>
+</head>
+
+<body>
+  <form name="loginForm">
+    <table width="20%" bgcolor="0099CC" align="center">
+
+      <tr>
+        <td colspan=2>
+          <center>
+            <font size=4><b>Login</b></font>
+          </center>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Username:</td>
+        <td><input id="login" type="text" size=25></td>
+      </tr>
+
+      <tr>
+        <td><button>join</button></td>
+      </tr>
+
+    </table>
+  </form>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+
+function POST(data, reqStringURL) {
+        var data = {
+            value: data
+        }
+
+        var xhr = new window.XMLHttpRequest();
+        xhr.open('POST', reqStringURL, true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        xhr.send(JSON.stringify(data));
+    }
+
+function GET(reqStringURL) {
+
+    var xhr = new window.XMLHttpRequest();
+    xhr.open('GET', reqStringURL);
+    xhr.send();
+}
+
+document.addEventListener("keypress", function onEvent(event) 
+    {
+        if (event.key === "e") 
+        {         
+          location.href += "test2";
+        }
+
+    });
+
+
+  $(function () {
+
+      $('form').submit(function (e) {
+        //e.preventDefault(); // prevents page reloading
+
+        var nickname = $("#login").val();
+        POST(nickname, "/Login");
+        location.href = "/Main";
+
+        return false;
+      });
+
+    });
+
+  </script>
+
+</html>

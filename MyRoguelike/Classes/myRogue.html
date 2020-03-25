@@ -1,0 +1,287 @@
+<html>
+
+
+    <!-- #region SCRIPTS -->
+
+
+    <script src="http://davidbau.com/encode/seedrandom.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\World.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\WorldGenerator.js"></script>
+
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Components\Components.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Entity.js"></script>
+
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\System.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\ActionSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\MovementSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\WorldSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\RenderSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\UISystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\FieldOfViewSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\AISystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\TurnSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\APSystem.js"></script>
+
+
+    
+
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Renderer.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Tile.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Room.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\EventBus.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\GlobalHelpers.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\FUNCTIONAL.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Input.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Obj.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\ECS.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Debug.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\MyConsole.js"></script>
+
+    <!-- #endregion -->
+
+    <head>
+        <meta charset="utf-8" />
+        <title>Hello React</title>
+    </head>
+
+    <body>        
+        <canvas id="canvas1" width="1280" height="1020">
+        </canvas>
+        <button class="button" style="position: absolute; top:100px; left:20px;" id="btn_map">SHOW_MAP</button>
+        <button class="button" style="position: absolute; top:150px; left:20px;" id="btn_map_hide">HIDE_MAP</button>
+
+
+        <button class="button" style="position: absolute; top:200px; left:20px;" id="btn_gen_exit">Gen_exit</button>
+
+
+
+        <p id="test" style="margin: auto"> 
+            <Text>
+            Render Speed
+            </Text>
+            <br>
+            <br>
+            <input type="text" id="input1" name="Render Speed (ms)">  ms </input>
+            <br>
+            <br>
+            <br>
+            <Text>
+                Tie Size
+            </Text>
+            <br>
+            <br>
+            <input type="text" id="input2" name="TileSize"/>
+        </p>
+
+        <br>
+        <button class="button" style="margin:auto" id="btn_gen1">GENERATOR</button>
+        <br>
+        <br>
+        <button class="button" style="margin:auto" id="btn2">CORRIDORS</button>
+        <br>d
+        <br>
+        <button class="button" style="margin:auto" id="btn3">GenP</button>
+        <br>
+
+        <div class="banner" id="banner" style="padding:-40px; text-align:center;">
+            <h1>Hello</h1>
+        </div>
+
+        <div class="MyConsole" id="MyConsole" style="position: absolute; top:20px; left:1180px; color:white; font-size:32px;">
+            <h1>PosConsole</h1>
+        </div>
+
+        <div class="MainConsole" id="MainConsole" style="position: absolute; top:20px; left:500px; color:white; font-size:32px;">
+            <h1></h1>
+        </div>
+
+        <div class="MyConsole1" id="MyConsole1" style="position: absolute; top:200px; left:200px;">
+            <h1>Hello</h1>
+        </div>
+
+    </body>
+
+    <script>
+
+        var POS = new Position(1,1);
+
+        //INITIALIZATION
+        let eventBus = new EventBus();
+        let canvas = document.getElementById("canvas1");
+        let ctx = canvas.getContext("2d");
+        let world = GetWorldFromCanvas(canvas, 16);
+        let worldGen = new WorldGenerator(world);
+        let renderer = new Renderer(16, 1);
+        var P;
+
+        let entities = [];
+        let systems = [];
+
+
+        Math.seedrandom("3");
+
+        
+
+
+    </script>
+
+
+
+
+
+
+    <script>
+
+        //UI
+        document.getElementById("banner").innerText = "WORLD CREATED (Width: "+world.width+", Height: "+world.height+")";
+        document.getElementById("btn_gen1").addEventListener("click",Gen);
+        document.getElementById("btn2").addEventListener("click",GenerateCorridors);
+        document.getElementById("btn3").addEventListener("click",GenP);
+
+        var posConsole = new MyConsole(document.getElementById("MyConsole"));
+        var mainConsole = new MyConsole(document.getElementById("MainConsole"));
+
+        var showMapFlag = 0;
+
+
+
+        document.getElementById("btn_map").addEventListener("click",ShowMap);
+        document.getElementById("btn_map_hide").addEventListener("click",HideMap);
+
+        document.getElementById("btn_gen_exit").addEventListener("click",worldGen.GenerateExit.bind(worldGen));
+        
+        
+        
+
+    </script>
+
+
+
+
+
+
+    <script>
+
+        function Init()
+        {
+           world = GetWorldFromCanvas(canvas, 16);
+           worldGen = new WorldGenerator(world);
+           renderer = new Renderer(16, 1);
+        }
+
+        
+        function INIT()
+        {
+            /*let eventBus = new EventBus();
+            let canvas = document.getElementById("canvas1");
+            let ctx = canvas.getContext("2d");
+            let world = GetWorldFromCanvas(canvas, 16);
+            let worldGen = new WorldGenerator(world);
+            let renderer = new Renderer(16, 1);
+            var P;*/
+            Init();
+
+            Gen();
+            GenerateCorridors();
+            worldGen.GenerateExit();
+            //GenP();
+        }
+
+        INIT();
+        
+
+    </script>
+
+
+
+
+
+
+
+
+    <script>
+
+Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+}
+
+        var pe = worldGen.GeneratePE();
+        let ecs = new ECS();
+        GenerateEnemies(2);
+        AssignInput(pe);
+
+        var renderSystem = new RenderSystem(["Position"],16);
+        var actionSystem = new ActionSystem(["Action"]);
+        var movementSystem = new MovementSystem(["Position"]);
+        var aiSystem = new AISystem(["AIController, Turn"]);
+        var worldSystem = new WorldSystem(["Position"],world);
+        var fieldOfViewSystem = new FieldOfViewSystem(["Position", "FoV"]);
+
+        let uiSystem = new UISystem(["Controller", "Position"], posConsole, mainConsole);
+
+        let turnSystem = new TurnSystem(["Turn, NoActionsAvailable"]);
+
+        let apSystem = new APSystem(["Stats, Action"]);
+
+        let debug = new Debug();
+
+        ecs.update();    
+        
+
+        console.log(entities);
+
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
+
+
+<!-- JS ES CLASSES COMPOSITION EXAMPLE:::::::::::::::::::::::::::::::::::::::::
+const EntityBehaviours = superclass => class extends superclass 
+{
+    eat(food) 
+    {
+        console.log(`Eating ${food}`);
+    }
+}
+
+class Animal
+{
+    constructor(name)
+    {
+        this.name = name;
+        console.log(name);
+    }
+
+    bark()
+    {
+        console.log("bark");
+    }
+}
+
+
+class AnimalBehavioursComposition extends EntityBehaviours(Animal){ }
+
+const test = new AnimalBehavioursComposition("test");
+test.bark();
+test.eat("eda");-->

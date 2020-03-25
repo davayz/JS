@@ -1,0 +1,665 @@
+<html>
+
+
+    <!-- #region SCRIPTS -->
+
+
+<!--     <script src="http://davidbau.com/encode/seedrandom.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\World.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\WorldGenerator.js"></script>
+
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Components\Components.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Entity.js"></script>
+
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\System.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\ActionSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\MovementSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\WorldSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\RenderSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\UISystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\FieldOfViewSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\AISystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\TurnSystem.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\Systems\APSystem.js"></script>
+
+
+    
+
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Renderer.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Tile.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Room.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\EventBus.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\GlobalHelpers.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\FUNCTIONAL.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Input.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Obj.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\ECS\ECS.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\Debug.js"></script>
+    <script src="C:\Users\Artem.Soldatenkov\Desktop\New folder\html_js\Classes\MyConsole.js"></script> -->
+
+    <!-- #endregion -->
+
+    <head>
+        <meta charset="utf-8" />
+        <title>Hello React</title>
+    </head>
+
+    <body>        
+        <canvas id="canvas1" width="1600" height="900"></canvas>
+        <button class="button" style="position: absolute; top:100px; left:20px;" id="btn_map">SHOW_MAP</button>
+        <button class="button" style="position: absolute; top:150px; left:20px;" id="btn_map_hide">HIDE_MAP</button>
+
+
+        <button class="button" style="position: absolute; top:200px; left:20px;" id="btn_gen_exit">Gen_exit</button>
+
+
+
+        <p id="test" style="margin: auto"> 
+            <Text>
+            Render Speed
+            </Text>
+            <br>
+            <br>
+            <input type="text" id="input1" name="Render Speed (ms)">  ms </input>
+            <br>
+            <br>
+            <br>
+            <Text>
+                Tie Size
+            </Text>
+            <br>
+            <br>
+            <input type="text" id="input2" name="TileSize"/>
+        </p>
+
+        <br>
+        <button class="button" style="margin:auto" id="btn_gen1">GENERATOR</button>
+        <br>
+        <br>
+        <button class="button" style="margin:auto" id="btn2">CORRIDORS</button>
+        <br>d
+        <br>
+        <button class="button" style="margin:auto" id="btn3">GenP</button>
+        <br>
+
+        <div class="banner" id="banner" style="padding:-40px; text-align:center;">
+            <h1>Hello</h1>
+        </div>
+
+        <div class="MyConsole" id="MyConsole" style="position: absolute; top:20px; left:1180px; color:white; font-size:32px;">
+            <h1></h1>
+        </div>
+
+        <div class="MainConsole" id="MainConsole" style="position: absolute; top:20px; left:500px; color:white; font-size:32px;">
+            <h1></h1>
+        </div>
+
+        <div class="MyConsole1" id="MyConsole1" style="position: absolute; top:200px; left:200px;">
+            <h1>Hello</h1>
+        </div>
+
+    </body>
+
+    <script>
+
+    class Entity {
+        constructor(name) {
+            this.name = name;
+            this.components = {};
+        }
+
+        addComponent(component) {
+            this.components[component.name] = component;
+
+            return this;
+        }
+
+        getComponent(componentName) {
+            var component = this.components[componentName];
+            return component;
+        }
+
+        removeComponent(componentName) {
+            delete this.components[componentName];
+        }
+
+        print() {
+            console.log(this.components);
+        }
+    }
+
+    class System {
+        constructor(componentNamesArray) {
+            this.requiredComponents = componentNamesArray;
+        }
+
+        update(entity) {
+
+            if (!this.ValidateRequiredComponents(entity, this.requiredComponents)) return false;
+        }
+
+        ValidateRequiredComponents(entity, componentNamesArray) {
+            if (componentNamesArray == undefined) return true;
+            let flag = true;
+
+            componentNamesArray.forEach(function (componentName) {
+                var component = entity.getComponent(componentName);
+
+                if (component == undefined) {
+                    flag = false;
+                }
+            });
+
+            return flag;
+        }
+    }
+
+    class RenderSystem extends System {
+        constructor(components, tileSize) {
+            super(components);
+            this.tileSize = tileSize;
+        }
+
+        update(entity) {
+            
+            if (entity.components.Renderable.flag == false || entity.components.Position == undefined) return;
+
+            var position = entity.components.Position;
+            var sprite = entity.components.Sprite;
+
+            //if (position.x == position.prevX && position.y == position.prevY) return;     
+
+
+            if (entity.components.Renderable.flag == false) {
+                this.renderFalse(position);
+                return;
+            }
+            else {
+                ///MAIN LOGIC
+                //this.renderPrevPosition(position);
+
+                this.renderCurrentPosition(position, sprite);
+            }
+        }
+
+        renderFalse(position) {
+            var x = position.x; var y = position.y;
+            ctx.fillStyle = "black";
+            ctx.fillRect(x * this.tileSize, y * this.tileSize - this.tileSize / 2 - 3, this.tileSize, this.tileSize);
+            ctx.fillStyle = "#ffffff";
+
+            //var tile = world.tiles[x][y];
+
+            /*if (tile.visibility == 1) {
+                eventBus.publish("OnTileRender", tile);
+            }*/
+        }
+
+        renderPrevPosition(position) {
+            if (position.prevX == undefined || position.prevY == undefined) return;
+
+            var x = position.prevX; var y = position.prevY;
+            ctx.fillStyle = "black";
+            ctx.fillRect(x * this.tileSize, y * this.tileSize - this.tileSize / 2 - 3, this.tileSize, this.tileSize);
+            ctx.fillStyle = "#ffffff";
+
+            //var tile = world.tiles[x][y];
+
+            /*if (tile.visibility == 1) {
+                eventBus.publish("OnTileRender", tile);
+            }*/
+        }
+
+        renderCurrentPosition(position, sprite) {
+            ctx.fillStyle = sprite.color;
+            ctx.fillText(sprite.sprite, position.x * this.tileSize, position.y * this.tileSize);
+            ctx.fillStyle = "#ffffff";
+        }
+    }
+        
+
+        var canvas = document.getElementById("canvas1");
+        var ctx = canvas.getContext("2d");
+        ctx.font = "19"+"px Times New Roman";
+        ctx.fillStyle='black';
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+
+
+    function POST(data, reqStringURL) {
+        var data = {
+            value: data
+        }
+
+        var xhr = new window.XMLHttpRequest();
+        xhr.open('POST', reqStringURL, true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        xhr.send(JSON.stringify(data));
+
+        renderTilesByGet();
+        //setTimeout(renderEntitiesByGet(),500);
+    }
+    
+    var renderSystem = new RenderSystem(["Position"],16);
+
+    document.addEventListener("keypress", function onEvent(event) 
+    {
+        if (event.key === "d" || event.code === "Numpad6") 
+        {          
+            POST("right",'/keyboardInput');
+        }
+
+        if (event.key === "a" || event.code === "Numpad4") 
+        {          
+            POST("left",'/keyboardInput');
+        }
+
+        if (event.key === "w" || event.code === "Numpad8") 
+        {          
+            POST("up",'/keyboardInput');
+        }
+
+        if (event.key === "s" || event.code === "Numpad2") 
+        {          
+            POST("down",'/keyboardInput');
+        }
+
+        if (event.key === "r") 
+        {          
+            renderTilesByGet();
+        } 
+
+        if (event.key === "e") 
+        {          
+            renderEntitiesByGet();
+        } 
+    });
+
+    function renderTilesByGet()
+    {
+        var req = new XMLHttpRequest();
+
+        req.onloadend = function()
+        {
+            onGetTiles(req);
+        }
+
+        req.open("GET","/render");
+        req.send();
+    }
+
+    function renderEntitiesByGet()
+    {
+        var req = new XMLHttpRequest();
+
+        req.onloadend = function()
+        {
+            onGetEntities(req);
+        }
+
+        req.open("GET","/getEntities");
+        req.send();
+
+        console.log(req);
+    }
+
+
+    function onGetEntities(req)
+    {
+        var entities = JSON.parse(req.responseText);
+
+        console.log(entities);
+        console.log(entities);
+        console.log(entities);
+
+        entities.forEach(function (entity)
+        {
+            renderSystem.update(entity);
+        });
+    }
+   
+
+
+    function onGetTiles(req)
+    {
+        var tiles = JSON.parse(req.responseText);     
+        
+        tiles.forEach(element => {
+            if (element != null)
+            {
+                element.forEach(function(tile)
+                {
+                    if (tile != null)
+                    {
+                        if (tile.visibility == 1)
+                        {
+                            render(tile,16);    
+                        }
+                    }
+                });
+            }                
+        });
+
+
+        renderEntitiesByGet();
+    }
+
+
+    function render(tile, tileSize)
+    {
+        ctxClearRect(tile.x, tile.y,16);
+        ctx.fillText(getTileGraphics(tile), tile.x*tileSize, tile.y*tileSize)     
+    }
+
+    function ctxClearRect(x,y, tileSize)
+    {
+        ctx.fillStyle = "black";
+        ctx.fillRect(x*tileSize, y*tileSize - tileSize/2 -3, tileSize, tileSize);
+        ctx.fillStyle = "#ffffff";
+    }
+
+    
+
+    function getTileGraphics(tile)
+    {
+        //if (tile.view != undefined) { return tile.view; }
+        if (tile.info == "corridor") return ".";
+
+        switch (tile.tileType)
+        {
+            case "wall":
+                return "#";
+            
+            case "floor":
+
+                switch(tile.info)
+                {
+                    case "corridor":
+                        return "o";
+                    default:
+                        return ".";
+                }
+
+            case "empty":
+                return "";
+
+            case "door":
+                return "+";
+
+            case "exit":
+                ctx.fillStyle = "#00FFFF";
+                return "E";
+
+            default:
+                return tile.view;
+        }
+    }
+
+
+
+
+
+    /*var string = this.response;
+
+var x = "";
+var y = "";
+
+var flag=0;
+
+for (var i=0; i<string.length; i++)
+{
+
+    if (string[i] != ";" && flag==0)
+    {
+        x+=string[i];
+    }
+    else if (flag==0)
+    {
+        flag=1;
+        continue;
+    }
+
+    if (flag==1)
+    {
+        y+=string[i];
+    }
+}
+
+x=parseInt(x);
+y=parseInt(y);
+
+console.log(x+y);*/
+
+       /* console.log(this);
+        
+    }*/
+    
+    /*setInterval(function () {
+        var oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", reqListener);
+        oReq.open("GET", "/api");
+        oReq.send();
+    }, 3000);*/
+
+
+
+        //INITIALIZATION
+/*         let eventBus = new EventBus();
+        let canvas = document.getElementById("canvas1");
+        let ctx = canvas.getContext("2d");
+        let world = GetWorldFromCanvas(canvas, 16);
+        let worldGen = new WorldGenerator(world);
+        let renderer = new Renderer(16, 1);
+        var P;
+
+        let entities = [];
+        let systems = [];
+
+
+        Math.seedrandom("3"); */
+
+        
+
+
+    </script>
+
+
+
+
+
+
+    <script>
+
+        //UI
+    /*     document.getElementById("banner").innerText = "WORLD CREATED (Width: "+world.width+", Height: "+world.height+")";
+        document.getElementById("btn_gen1").addEventListener("click",Gen);
+        document.getElementById("btn2").addEventListener("click",GenerateCorridors);
+        document.getElementById("btn3").addEventListener("click",GenP);
+
+        var posConsole = new MyConsole(document.getElementById("MyConsole"));
+        var mainConsole = new MyConsole(document.getElementById("MainConsole"));
+
+        var showMapFlag = 0;
+
+
+
+        document.getElementById("btn_map").addEventListener("click",ShowMap);
+        document.getElementById("btn_map_hide").addEventListener("click",HideMap);
+
+        document.getElementById("btn_gen_exit").addEventListener("click",worldGen.GenerateExit.bind(worldGen));
+         */
+        
+        
+
+    </script>
+
+
+
+
+
+
+    <script>
+
+        //PUBSUB
+
+
+        //eventBus.subscribe("OnPositionChanged", world, world.OnPPositionChanged);
+        
+        /* function Act(x, y)
+        {
+            var targetX = x+P.position.x;
+            var targetY = y+P.position.y;
+
+            var tile = world.tiles[targetX][targetY];
+
+            switch(tile.tileType)
+            {
+                case "exit":
+                    INIT();
+                default:
+                    
+            }
+
+            if (tile.tileType == "exit")
+            {
+                INIT();
+            }
+
+            if (!tile.occupied && tile.walkable)
+            {
+                console.log("movingTo "+x+" "+y);
+                P.move(x,y);
+            }
+
+            world.eList.forEach(function(e)
+            {
+                e.act(GetRandomInt(-1,1), GetRandomInt(-1,1));
+            });
+
+            renderSystem.update(pe);
+        }
+
+
+
+        function Init()
+        {
+           world = GetWorldFromCanvas(canvas, 16);
+           worldGen = new WorldGenerator(world);
+           renderer = new Renderer(16, 1);
+        }
+
+        
+        function INIT()
+        { */
+            /*let eventBus = new EventBus();
+            let canvas = document.getElementById("canvas1");
+            let ctx = canvas.getContext("2d");
+            let world = GetWorldFromCanvas(canvas, 16);
+            let worldGen = new WorldGenerator(world);
+            let renderer = new Renderer(16, 1);
+            var P;*/
+           /*  Init();
+
+            Gen();
+            GenerateCorridors();
+            worldGen.GenerateExit(); */
+            //GenP();
+      /*   }
+
+        INIT(); */
+        
+
+    </script>
+
+
+
+
+
+
+
+
+    <script>
+
+/* Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+}
+
+        var pe = worldGen.GeneratePE();
+        let ecs = new ECS();
+        GenE();
+        AssignInput(pe);
+
+        var renderSystem = new RenderSystem(["Position"],16);
+        var actionSystem = new ActionSystem(["Action"]);
+        var movementSystem = new MovementSystem(["Position"]);
+        var aiSystem = new AISystem(["AIController, Turn"]);
+        var worldSystem = new WorldSystem(["Position"],world);
+        var fieldOfViewSystem = new FieldOfViewSystem(["Position", "FoV"]);
+
+        let uiSystem = new UISystem(["Controller", "Position"], posConsole, mainConsole);
+
+        let turnSystem = new TurnSystem(["Turn, NoActionsAvailable"]);
+
+        let apSystem = new APSystem(["Stats, Action"]);
+
+        let debug = new Debug();
+
+        ecs.update();    
+        
+
+        console.log(entities); */
+
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
+
+
+<!-- JS ES CLASSES COMPOSITION EXAMPLE:::::::::::::::::::::::::::::::::::::::::
+const EntityBehaviours = superclass => class extends superclass 
+{
+    eat(food) 
+    {
+        console.log(`Eating ${food}`);
+    }
+}
+
+class Animal
+{
+    constructor(name)
+    {
+        this.name = name;
+        console.log(name);
+    }
+
+    bark()
+    {
+        console.log("bark");
+    }
+}
+
+
+class AnimalBehavioursComposition extends EntityBehaviours(Animal){ }
+
+const test = new AnimalBehavioursComposition("test");
+test.bark();
+test.eat("eda");-->
